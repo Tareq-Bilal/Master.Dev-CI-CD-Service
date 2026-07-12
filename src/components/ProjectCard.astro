@@ -1,0 +1,44 @@
+---
+import type { GitHubRepo } from "../lib/github";
+
+interface Props {
+  project: GitHubRepo;
+  index: number;
+  hidden?: boolean;
+}
+
+const { project, index, hidden = false } = Astro.props;
+const languageClass = project.language.toLowerCase().replace(/[^a-z0-9]/g, "-");
+const date = new Intl.DateTimeFormat("en", { month: "short", year: "numeric" }).format(new Date(project.updatedAt));
+const shortName = project.name.replaceAll("-", " ");
+---
+
+<article class:list={["project-card", hidden && "extra-project"]}>
+  <a class:list={["project-visual", `visual-${(index % 4) + 1}`]} href={project.url} target="_blank" rel="noreferrer" aria-label={`Open ${shortName} on GitHub`}>
+    <div class="visual-topbar"><span></span><span></span><span></span><small>{project.language}</small></div>
+    <div class="visual-content" aria-hidden="true">
+      <div class="code-number">0{index + 1}</div>
+      <div class="code-lines"><i></i><i></i><i></i><i></i></div>
+      <span class="visual-name">{project.name.slice(0, 2).toUpperCase()}</span>
+    </div>
+  </a>
+  <div class="project-body">
+    <div class="project-heading">
+      <h3>{shortName}</h3>
+      <span class:list={["language-dot", languageClass]}></span>
+    </div>
+    <p>{project.description}</p>
+    <div class="project-meta">
+      <span>Updated {date}</span>
+      {project.stars > 0 && <span aria-label={`${project.stars} stars`}>☆ {project.stars}</span>}
+    </div>
+    <div class="project-links">
+      <a href={project.url} target="_blank" rel="noreferrer">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 19c-4.5 1.4-4.5-2.5-6-3m12 6v-3.9c0-1.1.1-1.5-.5-2.1 2.8-.3 5.7-1.4 5.7-6.2 0-1.4-.5-2.5-1.3-3.4.1-.3.6-1.6-.1-3.3 0 0-1.1-.3-3.6 1.3a12.4 12.4 0 0 0-6.5 0C6.2 2.7 5.1 3.1 5.1 3.1c-.7 1.7-.2 3-.1 3.3a5 5 0 0 0-1.3 3.4c0 4.8 2.9 5.9 5.7 6.2-.5.5-.6 1-.6 2.1V22"/></svg>
+        Source
+      </a>
+      {project.homepage && <a href={project.homepage} target="_blank" rel="noreferrer">Live <span>↗</span></a>}
+    </div>
+  </div>
+</article>
+

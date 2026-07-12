@@ -1,0 +1,45 @@
+---
+import type { GitHubActivity } from "../lib/github";
+
+interface Props {
+  events: GitHubActivity[];
+  username: string;
+}
+
+const { events, username } = Astro.props;
+const today = new Date();
+today.setHours(0, 0, 0, 0);
+const start = new Date(today);
+start.setDate(today.getDate() - 181);
+const counts = new Map<string, number>();
+
+for (const event of events) {
+  const key = event.createdAt.slice(0, 10);
+  counts.set(key, (counts.get(key) ?? 0) + 1);
+}
+
+const days = Array.from({ length: 182 }, (_, index) => {
+  const date = new Date(start);
+  date.setDate(start.getDate() + index);
+  const key = date.toISOString().slice(0, 10);
+  const count = counts.get(key) ?? 0;
+  const level = count === 0 ? 0 : count < 2 ? 1 : count < 4 ? 2 : count < 7 ? 3 : 4;
+  return { key, count, level, label: date.toLocaleDateString("en", { month: "short", day: "numeric" }) };
+});
+
+const total = events.length;
+---
+
+<div class="activity-card">
+  <div class="activity-summary">
+    <span><strong>{total}</strong> recent public events</span>
+    <a href={`https://github.com/${username}`} target="_blank" rel="noreferrer">View on GitHub ↗</a>
+  </div>
+  <div class="activity-scroll" role="img" aria-label={`${total} recent public GitHub events`}>
+    <div class="activity-grid">
+      {days.map((day) => <span class={`activity-day level-${day.level}`} title={`${day.label}: ${day.count} event${day.count === 1 ? "" : "s"}`}></span>)}
+    </div>
+  </div>
+  <div class="activity-legend"><span>Less</span><i class="level-0"></i><i class="level-1"></i><i class="level-2"></i><i class="level-3"></i><i class="level-4"></i><span>More</span></div>
+</div>
+
