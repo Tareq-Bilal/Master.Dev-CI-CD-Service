@@ -43,11 +43,17 @@ const stack = [
   { name: ".NET Core", icon: "dotnet" },
   { name: "React", icon: "react" },
   { name: "Next.js", icon: "nextdotjs" },
+  { name: "Node.js", icon: "nodedotjs" },
+  { name: "Express", icon: "express" },
   { name: "TypeScript", icon: "typescript" },
   { name: "PostgreSQL", icon: "postgresql" },
   { name: "SQL Server", icon: "microsoftsqlserver" },
+  { name: "MongoDB", icon: "mongodb" },
   { name: "GraphQL", icon: "graphql" },
+  { name: "RabbitMQ", icon: "rabbitmq" },
   { name: "Docker", icon: "docker" },
+  { name: "AWS", icon: "aws" },
+  { name: "IdentityServer", icon: "identityserver", extension: "png" },
   { name: "GitHub Actions", icon: "githubactions" },
   { name: "Redis", icon: "redis" },
   { name: "Jest", icon: "jest" },
@@ -142,7 +148,7 @@ const stack = [
           <SectionHeading title="Stack" />
           <div class="tags stack-tags" id="stack-heading">
             {stack.map((technology) => (
-              <span class="tag"><img src={`/icons/${technology.icon}.svg`} width="15" height="15" alt="" loading="lazy" />{technology.name}</span>
+              <span class="tag"><img src={`/icons/${technology.icon}.${technology.extension ?? "svg"}`} width="15" height="15" alt="" loading="lazy" />{technology.name}</span>
             ))}
           </div>
         </section>
