@@ -72,7 +72,7 @@ const stack = [
     <meta property="og:title" content="Tareq Abu Sharkh — .NET Software Engineer" />
     <meta property="og:description" content="Full Stack Engineer working across .NET, GraphQL, React, Next.js, and production observability." />
     <meta property="og:image" content={profile.avatarUrl} />
-    <link rel="icon" type="image/png" href="/avatar.png" />
+    <link rel="icon" type="image/png" href={profile.avatarUrl} />
     <title>Tareq Abu Sharkh — .NET Software Engineer</title>
     <script is:inline>
       if (localStorage.getItem("theme") === "light") document.documentElement.classList.add("light-mode");
@@ -95,7 +95,7 @@ const stack = [
       <main>
         <section aria-labelledby="profile-name">
           <div class="profile-card">
-            <div class="avatar-wrap"><img src="/avatar.png" width="92" height="92" alt={`${profile.name}'s portrait`} /></div>
+            <div class="avatar-wrap"><img src={profile.avatarUrl} width="92" height="92" alt={`${profile.name}'s portrait`} /></div>
             <div class="profile-copy">
               <h1 class="profile-name" id="profile-name">{profile.name}<span class="verified" title="GitHub profile">✓</span></h1>
               <a class="profile-email" href="mailto:tareqbilal44@gmail.com">
