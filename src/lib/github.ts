@@ -30,6 +30,12 @@ export interface GitHubActivity {
   repository: string;
 }
 
+export interface GitHubContribution {
+  date: string;
+  level: number;
+  count: number;
+}
+
 interface GitHubUserResponse {
   login: string;
   name: string | null;
@@ -80,10 +86,14 @@ async function githubFetch<T>(path: string): Promise<T> {
 }
 
 export async function getGitHubPortfolio(username: string) {
-  const [user, repositories, activity] = await Promise.all([
+  const [user, repositories, activity, contributionsHtml] = await Promise.all([
     githubFetch<GitHubUserResponse>(`/users/${username}`),
     githubFetch<GitHubRepoResponse[]>(`/users/${username}/repos?per_page=100&sort=updated`),
     githubFetch<GitHubEventResponse[]>(`/users/${username}/events/public?per_page=100`),
+    fetch(`https://github.com/users/${username}/contributions`).then((response) => {
+      if (!response.ok) throw new Error(`GitHub contributions request failed (${response.status})`);
+      return response.text();
+    }),
   ]);
 
   const profile: GitHubProfile = {
@@ -118,6 +128,21 @@ export async function getGitHubPortfolio(username: string) {
     repository: event.repo.name,
   }));
 
-  return { profile, repos, events };
-}
+  const tooltipCounts = new Map<string, number>();
+  const tooltipPattern = /for="([^"]+)"[^>]*>\s*(?:(\d[\d,]*) contribution|No contribution)/g;
+  for (const match of contributionsHtml.matchAll(tooltipPattern)) {
+    tooltipCounts.set(match[1], match[2] ? Number(match[2].replaceAll(",", "")) : 0);
+  }
 
+  const contributions: GitHubContribution[] = [];
+  const dayPattern = /data-date="([^"]+)" id="([^"]+)" data-level="([0-4])"/g;
+  for (const match of contributionsHtml.matchAll(dayPattern)) {
+    contributions.push({
+      date: match[1],
+      count: tooltipCounts.get(match[2]) ?? 0,
+      level: Number(match[3]),
+    });
+  }
+
+  return { profile, repos, events, contributions };
+}

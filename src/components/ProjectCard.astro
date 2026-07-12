@@ -4,23 +4,18 @@ import type { GitHubRepo } from "../lib/github";
 interface Props {
   project: GitHubRepo;
   index: number;
-  hidden?: boolean;
+  thumbnail: string;
 }
 
-const { project, index, hidden = false } = Astro.props;
+const { project, index, thumbnail } = Astro.props;
 const languageClass = project.language.toLowerCase().replace(/[^a-z0-9]/g, "-");
 const date = new Intl.DateTimeFormat("en", { month: "short", year: "numeric" }).format(new Date(project.updatedAt));
-const shortName = project.name.replaceAll("-", " ");
+const shortName = project.name === "MermaidFlow-Client" ? "Mermaid Flow Client" : project.name.replaceAll("-", " ");
 ---
 
-<article class:list={["project-card", hidden && "extra-project"]}>
-  <a class:list={["project-visual", `visual-${(index % 4) + 1}`]} href={project.url} target="_blank" rel="noreferrer" aria-label={`Open ${shortName} on GitHub`}>
-    <div class="visual-topbar"><span></span><span></span><span></span><small>{project.language}</small></div>
-    <div class="visual-content" aria-hidden="true">
-      <div class="code-number">0{index + 1}</div>
-      <div class="code-lines"><i></i><i></i><i></i><i></i></div>
-      <span class="visual-name">{project.name.slice(0, 2).toUpperCase()}</span>
-    </div>
+<article class="project-card">
+  <a class="project-visual" href={project.url} target="_blank" rel="noreferrer" aria-label={`Open ${shortName} on GitHub`}>
+    <img src={thumbnail} alt={`${shortName} project interface`} width="1200" height="675" loading={index === 0 ? "eager" : "lazy"} />
   </a>
   <div class="project-body">
     <div class="project-heading">
@@ -41,4 +36,3 @@ const shortName = project.name.replaceAll("-", " ");
     </div>
   </div>
 </article>
-
